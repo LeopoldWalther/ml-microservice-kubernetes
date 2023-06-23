@@ -1,4 +1,6 @@
-[![Leopold Walther](https://github.com/LeopoldWalther/ml-microservice-kubernetes.svg?style=svg)](https://github.com/LeopoldWalther/ml-microservice-kubernetes)
+
+[![LeopoldWalther](https://circleci.com/github/LeopoldWalther/ml-microservice-kubernetes.svg?style=svg)](https://app.circleci.com/pipelines/github/LeopoldWalther/ml-microservice-kubernetes)
+
 
 ## Project Overview
 
