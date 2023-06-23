@@ -3,13 +3,13 @@
 
 # Assumes that an image is built via `run_docker.sh`
 
-# Step 1:
 # Create dockerpath
-# dockerpath=<your docker ID/path>
+dockerpath=leopoldwalther/housing-price-prediction
 
-# Step 2:  
 # Authenticate & tag
 echo "Docker ID and Image: $dockerpath"
+docker login -u leopoldwalther
+docker tag housing-price-prediction $dockerpath:latest
 
-# Step 3:
 # Push image to a docker repository
+docker push $dockerpath:latest
