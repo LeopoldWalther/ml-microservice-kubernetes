@@ -1,50 +1,90 @@
-<include a CircleCI status badge, here>
+[![Leopold Walther](https://github.com/LeopoldWalther/ml-microservice-kubernetes.svg?style=svg)](https://github.com/LeopoldWalther/ml-microservice-kubernetes)
 
 ## Project Overview
 
-In this project, you will apply the skills you have acquired in this course to operationalize a Machine Learning Microservice API. 
+In the world of Data Science and Machine Learning there is a lot of emphasis on developing machine learning models in jupyter notebooks, but a lot less on taking a model and deploying it to production.
 
-You are given a pre-trained, `sklearn` model that has been trained to predict housing prices in Boston according to several features, such as average rooms in a home and data about highway access, teacher-to-pupil ratios, and so on. You can read more about the data, which was initially taken from Kaggle, on [the data source site](https://www.kaggle.com/c/boston-housing). This project tests your ability to operationalize a Python flask app—in a provided file, `app.py`—that serves out predictions (inference) about housing prices through API calls. This project could be extended to any pre-trained machine learning model, such as those for image recognition and data labeling.
+Goal of this project is to operationalize a machine learning microservice using [kubernetes](https://kubernetes.io/), which is an open-source system for automating the management of containerized applications. The mircroservice contains of a pre-trained, `sklearn` model that has been trained to predict housing prices in Boston according to several features, such as average rooms in a home and data about highway access, teacher-to-pupil ratios [data source site](https://www.kaggle.com/c/boston-housing). This machine learning model is used by a Python flask app `app.py`, that serves out predictions (inference) about housing prices through API calls. This project could be extended to any pre-trained machine learning model, such as those for image recognition and data labeling.
 
-### Project Tasks
-
-Your project goal is to operationalize this working, machine learning microservice using [kubernetes](https://kubernetes.io/), which is an open-source system for automating the management of containerized applications. In this project you will:
-* Test your project code using linting
-* Complete a Dockerfile to containerize this application
-* Deploy your containerized application using Docker and make a prediction
-* Improve the log statements in the source code for this application
-* Configure Kubernetes and create a Kubernetes cluster
-* Deploy a container using Kubernetes and make a prediction
-* Upload a complete Github repo with CircleCI to indicate that your code has been tested
-
-You can find a detailed [project rubric, here](https://review.udacity.com/#!/rubrics/2576/view).
-
-**The final implementation of the project will showcase your abilities to operationalize production microservices.**
-
----
 
 ## Setup the Environment
 
 * Create a virtualenv with Python 3.7 and activate it. Refer to this link for help on specifying the Python version in the virtualenv. 
+You should have Python 3.7 available in your host. 
+Check the Python path using `which python3`
+
+`make setup` or 
+
 ```bash
-python3 -m pip install --user virtualenv
-# You should have Python 3.7 available in your host. 
-# Check the Python path using `which python3`
-# Use a command similar to this one:
-python3 -m virtualenv --python=<path-to-Python3.7> .devops
-source .devops/bin/activate
+python3 -m venv ~/.devops
+source ~/.devops/bin/activate
 ```
-* Run `make install` to install the necessary dependencies
+* Run `make install` to install the necessary dependencies or
+```bash
+pip install --upgrade pip && pip install -r requirements.txt
+```
+
+* Test code using linting with `make lint`
+This should be run from inside a virtualenv
+```bash
+# linter for Docker files
+hadolint Dockerfile
+
+# linter for Python source code linter: https://www.pylint.org/
+pylint --disable=R,C,W1203,W1202 app.py
+```
 
 ### Running `app.py`
 
 1. Standalone:  `python app.py`
-2. Run in Docker:  `./run_docker.sh`
+2. Run in Docker:  `./run_docker.sh` 
 3. Run in Kubernetes:  `./run_kubernetes.sh`
 
 ### Kubernetes Steps
 
-* Setup and Configure Docker locally
-* Setup and Configure Kubernetes locally
-* Create Flask app in Container
-* Run via kubectl
+1. Setup and Configure Docker locally
+2. Setup and Configure Kubernetes locally
+3. Create Flask app in Container
+4. Run via kubectl
+
+
+### Upload Docker image to Dockerhub with `./upload_docker.sh` or 
+```bash
+# Create dockerpath
+dockerpath=leopoldwalther/housing-price-prediction
+
+# Authenticate & tag
+echo "Docker ID and Image: $dockerpath"
+docker login -u leopoldwalther
+docker tag housing-price-prediction $dockerpath:latest
+
+# Push image to a docker repository
+docker push $dockerpath:latest
+```
+
+### Configure Kubernetes and create a Kubernetes cluster
+Start Minikube with `minikube start` and check if certificate-authority and server are up running with `kubectl config view`
+
+To stop minikube `minikube delete`.
+
+### Deploy a container using Kubernetes with `./run_kubernetes.sh` and make a prediction
+
+```bash
+# dockerpath=<>
+dockerpath=leopoldwalther/housing-price-prediction
+
+# Run the Docker Hub container with kubernetes
+kubectl create deploy housing-price-prediction --image=$dockerpath:latest
+#kubectl run housing-price-prediction --image=$dockerpath --port=80
+
+# List kubernetes pods and get name of running pod with id
+kubectl get pods
+podname=$(kubectl get pods | grep -o "housing-price-prediction-.*" | awk '{print $1}')
+
+# Forward the container port to a host
+kubectl port-forward pod/$podname 8000:80
+```
+
+Test if API works with `./make_prediction.sh` from different terminal.
+
+### Upload a complete Github repo with CircleCI batch to indicate that code has been tested
