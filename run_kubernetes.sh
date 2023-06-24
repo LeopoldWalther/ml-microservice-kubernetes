@@ -8,7 +8,6 @@ dockerpath=leopoldwalther/housing-price-prediction
 
 # Run the Docker Hub container with kubernetes
 kubectl create deploy housing-price-prediction --image=$dockerpath:latest
-#kubectl run housing-price-prediction --image=$dockerpath --port=80
 
 # List kubernetes pods
 kubectl get pods

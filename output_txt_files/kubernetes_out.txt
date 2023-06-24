@@ -1,1 +1,13 @@
-<paste log output from Kubernetes-mediated prediction, here>
+NAME                                        READY   STATUS    RESTARTS   AGE
+housing-price-prediction-776b85b5dd-c65k4   1/1     Running   0          2m35s
+Forwarding from 127.0.0.1:8000 -> 80
+Forwarding from [::1]:8000 -> 80
+Handling connection for 8000
+
+$ ./make_prediction.sh 
+Port: 8000
+{
+  "prediction": [
+    20.35373177134412
+  ]
+}
